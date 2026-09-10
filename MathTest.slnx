@@ -3,5 +3,7 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="MathTest/MathTest.vcxproj" />
+  <Project Path="MathLib/MathLib.vcxproj" Id="21b722d6-1c27-440b-92fe-f3e0f19dfc98" />
+  <Project Path="MathTest/MathTest.vcxproj" Id="25e9a10b-17c8-420e-9507-734dfad5cf17" />
+  <Project Path="Tests/Tests.vcxproj" Id="78d839e9-847f-44d5-8f5a-84bbdc99bfe1" />
 </Solution>
