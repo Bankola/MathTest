@@ -1,7 +1,7 @@
 #include "pch.h"
-#include "../MathLib/mathtest.h"
+#include "math.h"
 
-TEST(TestCaseName, TestName) {
-  EXPECT_EQ(1, 1);
-  EXPECT_TRUE(true);
+TEST(Mathlib, TestConstructor) {
+	Task t1();
+
 }
