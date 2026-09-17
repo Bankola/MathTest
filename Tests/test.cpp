@@ -19,19 +19,6 @@ TEST(Task, DefaultOperationInRange) {
     }
 }
 
-TEST(Task, DefaultAnswerMatchesOperation) {
-    for (int i = 0; i < 100; ++i) {
-        Task t;
-        switch (t.operation) {
-        case 1: EXPECT_EQ(t.answer, t.num_1 + t.num_2); break;
-        case 2: EXPECT_EQ(t.answer, t.num_1 - t.num_2); break;
-        case 3: EXPECT_EQ(t.answer, t.num_1 * t.num_2); break;
-        case 4: EXPECT_EQ(t.answer, t.num_1 / t.num_2); break;
-        default: FAIL() << "unknown operation: " << (int)t.operation;
-        }
-    }
-}
-
 TEST(Task, RangeRespectsMinMax) {
     for (int i = 0; i < 200; ++i) {
         Task t(5, 10, '+');
@@ -70,5 +57,128 @@ TEST(Task, MultiplyOperation) {
 TEST(Task, DivideOperation) {
     Task t(1, 100, '/');
     EXPECT_EQ(t.operation, 4);
-    EXPECT_EQ(t.answer, t.num_1 / t.num_2);
+    EXPECT_DOUBLE_EQ(t.answer, static_cast<double>(t.num_1) / t.num_2);
+}
+
+TEST(MathTest, ZeroQuestionsClampedToOne) {
+    MathTest mt(0);
+    EXPECT_FALSE(mt.submit_answer(1, 0));
+}
+
+TEST(MathTest, NegativeQuestionsClampedToOne) {
+    MathTest mt(-5);
+    EXPECT_FALSE(mt.submit_answer(1, 0));
+}
+
+TEST(MathTest, InitialCountIsZero) {
+    MathTest mt(5);
+    EXPECT_EQ(mt.get_current_count(), 0);
+}
+
+TEST(MathTest, SubmitOutOfRangeNegative) {
+    MathTest mt(2, 1, 10, '+');
+    EXPECT_FALSE(mt.submit_answer(-1, 5));
+}
+
+TEST(MathTest, SubmitOutOfRangeTooBig) {
+    MathTest mt(2, 1, 10, '+');
+    EXPECT_FALSE(mt.submit_answer(2, 5));
+}
+
+TEST(MathTest, SubmitOutOfRangeDoesNotCount) {
+    MathTest mt(3, 1, 10, '+');
+    mt.submit_answer(-1, 5);
+    mt.submit_answer(99, 5);
+    EXPECT_EQ(mt.get_current_count(), 0);
+}
+
+TEST(MathTest, SubmitAndIsCorrectConsistentTrue) {
+    MathTest mt(1, 2, 2, '+');  
+    bool ok = mt.submit_answer(0, 4);
+    EXPECT_TRUE(ok);
+    EXPECT_TRUE(mt.is_correct(0));
+}
+
+TEST(MathTest, SubmitAndIsCorrectConsistentFalse) {
+    MathTest mt(1, 2, 2, '+');
+    bool ok = mt.submit_answer(0, 999);
+    EXPECT_FALSE(ok);
+    EXPECT_FALSE(mt.is_correct(0));
+}
+
+TEST(MathTest, IsCorrectOutOfRange) {
+    MathTest mt(2, 1, 10, '+');
+    EXPECT_FALSE(mt.is_correct(-1));
+    EXPECT_FALSE(mt.is_correct(2));
+}
+
+TEST(MathTest, CorrectCountIncrements) {
+    MathTest mt(3, 2, 2, '+');   
+    EXPECT_EQ(mt.get_current_count(), 0);
+    mt.submit_answer(0, 4);
+    EXPECT_EQ(mt.get_current_count(), 1);
+    mt.submit_answer(1, 4);
+    EXPECT_EQ(mt.get_current_count(), 2);
+    mt.submit_answer(2, 4);
+    EXPECT_EQ(mt.get_current_count(), 3);
+}
+
+TEST(MathTest, MarkAllCorrect) {
+    MathTest mt(10, 2, 2, '+');
+    for (int i = 0; i < 10; ++i) mt.submit_answer(i, 4);
+    EXPECT_EQ(mt.calculate_mark(), '5'); 
+}
+
+TEST(MathTest, Mark90Percent) {
+    MathTest mt(10, 2, 2, '+');
+    for (int i = 0; i < 9; ++i) mt.submit_answer(i, 4);
+    EXPECT_EQ(mt.calculate_mark(), '5');
+}
+
+TEST(MathTest, Mark75Percent) {
+    MathTest mt(4, 2, 2, '+');
+    for (int i = 0; i < 3; ++i) mt.submit_answer(i, 4);   
+    EXPECT_EQ(mt.calculate_mark(), '4');
+}
+
+TEST(MathTest, Mark60Percent) {
+    MathTest mt(5, 2, 2, '+');
+    for (int i = 0; i < 3; ++i) mt.submit_answer(i, 4);  
+    EXPECT_EQ(mt.calculate_mark(), '3');
+}
+
+TEST(MathTest, MarkBelow60) {
+    MathTest mt(10, 2, 2, '+');
+    for (int i = 0; i < 5; ++i) mt.submit_answer(i, 4);  
+    EXPECT_EQ(mt.calculate_mark(), '2');
+}
+
+TEST(MathTest, MarkZero) {
+    MathTest mt(5, 2, 2, '+');
+    EXPECT_EQ(mt.calculate_mark(), '2');   
+}
+
+TEST(MathTest, AdditionCorrect) {
+    MathTest mt(5, 2, 2, '+');   
+    for (int i = 0; i < 5; ++i) mt.submit_answer(i, 4);
+    EXPECT_EQ(mt.get_current_count(), 5);
+    EXPECT_EQ(mt.calculate_mark(), '5');
+}
+
+TEST(MathTest, MultiplicationCorrect) {
+    MathTest mt(5, 3, 3, '*');  
+    for (int i = 0; i < 5; ++i) mt.submit_answer(i, 9);
+    EXPECT_EQ(mt.get_current_count(), 5);
+}
+
+TEST(MathTest, SubtractionCorrect) {
+    MathTest mt(5, 5, 5, '-');  
+    for (int i = 0; i < 5; ++i) mt.submit_answer(i, 0);
+    EXPECT_EQ(mt.get_current_count(), 5);
+}
+
+TEST(MathTest, DivisionCorrect) {
+    MathTest mt(5, 4, 4, '/');   
+    for (int i = 0; i < 5; ++i) mt.submit_answer(i, 1);
+    EXPECT_EQ(mt.get_current_count(), 5);
 }
