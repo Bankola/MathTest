@@ -33,6 +33,6 @@ public:
     bool is_correct(int index) const;
     char calculate_mark() const;
 
-    int get_current_count() const { return correct_count; }
+    int get_current_count() const noexcept { return correct_count; }
 };
 
