@@ -1,9 +1,12 @@
-#include <iostream>
-#include "../MathLib/mathtest.h"
+#include <cstdlib>
+#include <ctime>
+#include "../MathLib/math_lib.h"
 
 int main() {
+    std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
-	std::cout << "Hello world";
+    MathTest test(5, 1, 20);
+    test.run();
 
-	return 0;
+    return 0;
 }
