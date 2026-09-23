@@ -9,7 +9,7 @@ Task::Task() {
     num_1 = 1 + std::rand() % 10000;
     num_2 = 1 + std::rand() % 10000;
     operation = static_cast<char>(1 + std::rand() % 4);
-    Result(operation);
+    calculate_result();
 }
 
 Task::Task(int min, int max, char oper) {
@@ -36,11 +36,11 @@ Task::Task(int min, int max, char oper) {
         operation = static_cast<char>(1 + std::rand() % 4);
     }
 
-    Result(operation);
+   calculate_result();
 }
 
-void Task::Result(char oper) {
-    switch (oper) {
+void Task::calculate_result() {
+    switch (operation) {
     case 1: 
         answer = num_1 + num_2; 
         break;
@@ -62,7 +62,7 @@ void Task::Result(char oper) {
     }
 }
 
-void Task::print_question() const {
+void Task::print_question() const noexcept{
     char sign;
     switch (operation) {
     case 1: 
@@ -84,37 +84,11 @@ void Task::print_question() const {
     std::cout << num_1 << " " << sign << " " << num_2 << " = ?";
 }
 
-MathTest::MathTest(int questions_count) {
-    if (questions_count < 1) {
-        questions_count = 1;
-    }
+MathTest::MathTest(int questions_count) 
+    : MathTest(questions_count, 1, 10000, '\0'){ }
 
-    count = questions_count;
-    correct_count = 0;
-
-    tasks = new Task[count];
-    user_answers = new int[count]();
-}
-
-MathTest::MathTest(int questions_count, int min, int max) {
-    if (questions_count < 1) {
-        questions_count = 1;
-    }
-
-    if (max < min) {
-        std::swap(min, max);
-    }
-
-    count = questions_count;
-    correct_count = 0;
-
-    tasks = new Task[count];
-    user_answers = new int[count]();
-
-    for (int i = 0; i < count; ++i) {
-        tasks[i] = Task(min, max, '\0');
-    }
-}
+MathTest::MathTest(int questions_count, int min, int max)
+: MathTest(questions_count, min, max, '\0'){ }
 
 MathTest::MathTest(int questions_count, int min, int max, char oper) {
     if (questions_count < 1) questions_count = 1;
@@ -157,7 +131,8 @@ bool MathTest::is_correct(int index) const {
         return false;
     }
     long expected = std::llround(tasks[index].answer);
-    return static_cast<long>(user_answers[index]) == expected;
+    bool ok = (static_cast<long>(user_answers[index]) == expected);
+    return ok;
 }
 
 char MathTest::calculate_mark() const {

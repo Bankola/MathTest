@@ -8,9 +8,9 @@ struct Task {
 
     Task();
     Task(int min, int max, char oper = '\0');
-    void Result(char oper);
+    void calculate_result();
 
-    void print_question() const;
+    void print_question() const noexcept;
 };
 
 class MathTest {
@@ -34,5 +34,6 @@ public:
     char calculate_mark() const;
 
     int get_current_count() const noexcept { return correct_count; }
+    const Task& get_task(int index) const noexcept { return tasks[index]; }
 };
 

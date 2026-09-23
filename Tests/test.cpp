@@ -159,26 +159,46 @@ TEST(MathTest, MarkZero) {
 }
 
 TEST(MathTest, AdditionCorrect) {
-    MathTest mt(5, 2, 2, '+');   
-    for (int i = 0; i < 5; ++i) mt.submit_answer(i, 4);
+    MathTest mt(5, 5, 10, '+');
+    for (int i = 0; i < 5; ++i) {
+        const Task& t = mt.get_task(i);
+        int expected = t.num_1 + t.num_2;
+        EXPECT_TRUE(mt.submit_answer(i, expected));
+        EXPECT_TRUE(mt.is_correct(i));
+    }
     EXPECT_EQ(mt.get_current_count(), 5);
     EXPECT_EQ(mt.calculate_mark(), '5');
 }
 
 TEST(MathTest, MultiplicationCorrect) {
-    MathTest mt(5, 3, 3, '*');  
-    for (int i = 0; i < 5; ++i) mt.submit_answer(i, 9);
+    MathTest mt(5, 5, 10, '*');
+    for (int i = 0; i < 5; ++i) {
+        const Task& t = mt.get_task(i);
+        int expected = t.num_1 * t.num_2;
+        EXPECT_TRUE(mt.submit_answer(i, expected));
+        EXPECT_TRUE(mt.is_correct(i));
+    }
     EXPECT_EQ(mt.get_current_count(), 5);
 }
 
 TEST(MathTest, SubtractionCorrect) {
-    MathTest mt(5, 5, 5, '-');  
-    for (int i = 0; i < 5; ++i) mt.submit_answer(i, 0);
+    MathTest mt(5, 5, 10, '-');
+    for (int i = 0; i < 5; ++i) {
+        const Task& t = mt.get_task(i);
+        int expected = t.num_1 - t.num_2;
+        EXPECT_TRUE(mt.submit_answer(i, expected));
+        EXPECT_TRUE(mt.is_correct(i));
+    }
     EXPECT_EQ(mt.get_current_count(), 5);
 }
 
 TEST(MathTest, DivisionCorrect) {
-    MathTest mt(5, 4, 4, '/');   
-    for (int i = 0; i < 5; ++i) mt.submit_answer(i, 1);
+    MathTest mt(5, 5, 10, '/');
+    for (int i = 0; i < 5; ++i) {
+        const Task& t = mt.get_task(i);
+        int expected = static_cast<int>(std::llround(t.answer));
+        EXPECT_TRUE(mt.submit_answer(i, expected));
+        EXPECT_TRUE(mt.is_correct(i));
+    }
     EXPECT_EQ(mt.get_current_count(), 5);
 }
